@@ -59,6 +59,13 @@ public class BookingManager {
     public Booking bookRoom(String customerName, String contactNumber, String email, Room room, LocalDate checkIn, LocalDate checkOut) {
         if (!room.isAvailable()) throw new IllegalArgumentException("Room is occupied.");
 
+        if (checkIn == null || checkOut == null) {
+            throw new IllegalArgumentException("Please select both check-in and check-out dates.");
+        }
+        if (!checkOut.isAfter(checkIn)) {
+            throw new IllegalArgumentException("Check-out date must be after check-in date; same-day stay is not allowed.");
+        }
+
         String trimmedContact = contactNumber == null ? "" : contactNumber.trim();
         if (!trimmedContact.matches("\\d{10}")) {
             throw new IllegalArgumentException("Contact number must be exactly 10 digits.");

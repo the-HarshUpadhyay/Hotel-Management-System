@@ -340,7 +340,7 @@ public class BookingTab {
                 LocalDate today = LocalDate.now();
                 LocalDate minimumDate = checkInPicker
                         ? today
-                        : (dpCheckIn != null && dpCheckIn.getValue() != null ? dpCheckIn.getValue() : today);
+                        : (dpCheckIn != null && dpCheckIn.getValue() != null ? dpCheckIn.getValue().plusDays(1) : today.plusDays(1));
 
                 boolean disabled = item.isBefore(minimumDate);
                 setDisable(disabled);
@@ -358,7 +358,7 @@ public class BookingTab {
             datePicker.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (dpCheckOut != null) {
                     LocalDate checkout = dpCheckOut.getValue();
-                    if (checkout == null || (newValue != null && checkout.isBefore(newValue))) {
+                    if (checkout == null || (newValue != null && checkout.isBefore(newValue.plusDays(1)))) {
                         dpCheckOut.setValue(newValue != null ? newValue.plusDays(1) : LocalDate.now().plusDays(1));
                     }
                 }
