@@ -1,127 +1,120 @@
-# 🏨 Hotel Management System
+# Hotel Management System
 
-A fully-featured **JavaFX desktop application** for managing hotel rooms, bookings, and customer records. Built as a university lab mini-project demonstrating OOP principles, JavaFX GUI development, and file-based data persistence.
+A JavaFX desktop dashboard for managing rooms, reservations, guests, billing, and printed receipts with JDBC-backed persistence.
 
----
+## Overview
 
-## 📸 Features
+This project is a premium-styled hotel operations app inspired by luxury hospitality workflows. It includes room inventory management, reservation handling, guest records, checkout billing, receipt printing, and a dark themed UI designed for an internal front-desk experience.
 
-### 🏨 Room Management
-- Add rooms with Number, Type (Single / Double / Deluxe), and Price per day
-- View all rooms in a sortable table with colour-coded availability status
-- Filter to show **available rooms only**
-- Delete rooms (occupied rooms are protected)
+The application is now fully JDBC-based for operational data and UI copy. It can run with SQLite by default or connect to PostgreSQL/MySQL through environment configuration.
 
-### 📋 Booking & Checkout
-- Book a room for a guest with check-in / check-out date pickers
-- ComboBox auto-updates to show only available rooms
-- Booking confirmation popup with full summary and total charges
-- One-click **Checkout** to free a room
+## Features
 
-### 👤 Customer Records
-- Full booking history with 10-column table
-- **Live search** by guest name or contact number
-- Revenue summary bar (auto-updates on any booking change)
+- Room inventory with pricing, availability status, filtering, and protected deletion for occupied rooms
+- Reservation flow with guest details, luxury-styled date pickers, disabled past dates, and highlighted current day
+- Guest registry with live search and revenue summary
+- Billing workflow with checkout invoice generation, payment marking, and receipt printing
+- JDBC-backed persistence for rooms, customers, bookings, bills, and UI text content
+- Database-seeded UI copy through the `app_texts` table
 
-### 💾 Persistence
-- Data auto-saved to `hotel_data.json` after every action
-- State fully restored on next launch
-- 10 sample rooms pre-loaded on first run
+## Tech Stack
 
----
+- Java 22
+- JavaFX 21
+- Maven
+- JDBC
+- SQLite by default
+- PostgreSQL / MySQL supported through JDBC configuration
 
-## 🗂️ Project Structure
+## Project Structure
 
-```
+```text
 HotelManagementSystem/
-├── pom.xml
-└── src/main/
-    ├── java/hotel/
-    │   ├── HotelApp.java               ← Main entry point
-    │   ├── model/
-    │   │   ├── RoomType.java           ← Enum: SINGLE, DOUBLE, DELUXE
-    │   │   ├── Room.java               ← Observable model (JavaFX Properties)
-    │   │   ├── Customer.java           ← Guest data
-    │   │   └── Booking.java            ← Booking with auto bill calculation
-    │   ├── service/
-    │   │   └── BookingManager.java     ← Business logic + JSON persistence
-    │   └── ui/
-    │       ├── RoomTab.java            ← Room Management tab
-    │       ├── BookingTab.java         ← Booking & Checkout tab
-    │       └── CustomerTab.java        ← Customer Records tab
-    └── resources/hotel/
-        └── styles.css                  ← UI stylesheet
+|-- pom.xml
+`-- src/main/
+    |-- java/hotel/
+    |   |-- HotelApp.java
+    |   |-- config/
+    |   |   `-- AppText.java
+    |   |-- model/
+    |   |   |-- Bill.java
+    |   |   |-- Booking.java
+    |   |   |-- Customer.java
+    |   |   |-- Room.java
+    |   |   `-- RoomType.java
+    |   |-- service/
+    |   |   |-- BookingManager.java
+    |   |   `-- DatabaseHelper.java
+    |   `-- ui/
+    |       |-- BillingTabController.java
+    |       |-- BookingTab.java
+    |       |-- CustomerTab.java
+    |       `-- RoomTab.java
+    `-- resources/hotel/
+        |-- styles.css
+        `-- ui/BillingTab.fxml
 ```
 
----
+## Requirements
 
-## ⚙️ Tech Stack
+- Java 22 or newer
+- Maven 3.8+
 
-| Component | Technology |
-|-----------|-----------|
-| Language | Java 17 |
-| GUI Framework | JavaFX 21 |
-| Build Tool | Maven 3.8+ |
-| JSON Persistence | Gson 2.10 |
+## Running
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- **Java 17+** — verify with `java --version`
-- **Maven 3.8+** — verify with `mvn --version`  
-  *(or use the included Maven Wrapper — no install required)*
-
-### Run the application
+Default run:
 
 ```bash
-# Clone / navigate to the project
-cd "HotelManagementSystem"
-
-# With Maven installed
 mvn clean javafx:run
+```
 
-# With the Maven Wrapper (no Maven install needed)
+If you prefer the Maven wrapper:
+
+```bash
 ./mvnw clean javafx:run
 ```
 
-The app opens to a 3-tab interface. Data is saved to `hotel_data.json` in the working directory.
+On Windows:
 
----
+```powershell
+.\mvnw.cmd clean javafx:run
+```
 
-## 🧠 OOP Concepts Demonstrated
+## Database Configuration
 
-| Concept | Implementation |
-|---------|---------------|
-| **Encapsulation** | All model fields are `private` with getters/setters |
-| **Inheritance** | `HotelApp extends Application` |
-| **Composition** | `Booking` has-a `Customer` and has-a `Room` |
-| **Abstraction** | UI tabs delegate all logic to `BookingManager` |
-| **Enum** | `RoomType` replaces magic strings |
-| **Observer Pattern** | `ObservableList` + `ListChangeListener` for live UI updates |
+If no database environment variables are set, the app falls back to:
 
----
+```text
+jdbc:sqlite:database.sqlite
+```
 
-## ✅ Input Validation
+To use a server database instead, set these environment variables before launch:
 
-- Room number must be unique and non-empty
-- Price must be a positive number
-- Customer name cannot be blank
-- Contact number must be exactly 10 digits
-- Check-out date must be after check-in date
-- Cannot book an already occupied room
-- Cannot delete an occupied room
+```bash
+HOTEL_DB_URL=jdbc:postgresql://localhost:5432/hotel_management
+HOTEL_DB_USER=your_user
+HOTEL_DB_PASSWORD=your_password
+```
 
----
+Example MySQL URL:
 
-## 📁 Data File
+```bash
+HOTEL_DB_URL=jdbc:mysql://localhost:3306/hotel_management
+```
 
-On first launch, `hotel_data.json` is created in the working directory. It stores all rooms and active bookings. Safe to delete to reset to sample data.
+## JDBC Tables
 
----
+The application initializes and uses these tables:
 
-## 👨‍💻 Author
+- `rooms`
+- `customers`
+- `bookings`
+- `bills`
+- `app_texts`
 
-**Lab Mini Project** — Operating Systems & Distributed Labs (OSDL)  
-University Course Project | April 2026
+## Notes
+
+- Sample rooms are seeded automatically when the database is empty.
+- UI copy is loaded from the database instead of local text files.
+- Receipt printing is triggered from the billing workflow after settlement.
+- SQLite is still JDBC-based but file-backed; use PostgreSQL or MySQL if you want a non-file database deployment.

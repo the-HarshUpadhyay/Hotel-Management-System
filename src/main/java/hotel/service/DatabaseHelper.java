@@ -5,49 +5,58 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * Handles initialization of SQLite DB and provides JDBC Connections.
- */
 public class DatabaseHelper {
-    private static final String URL = "jdbc:sqlite:database.sqlite";
+    private static final String DEFAULT_URL = "jdbc:sqlite:database.sqlite";
+    private static final String DB_URL = valueOrDefault(System.getenv("HOTEL_DB_URL"), DEFAULT_URL);
+    private static final String DB_USER = System.getenv("HOTEL_DB_USER");
+    private static final String DB_PASSWORD = System.getenv("HOTEL_DB_PASSWORD");
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL);
+        if (DB_USER != null && !DB_USER.isBlank()) {
+            return DriverManager.getConnection(DB_URL, DB_USER, valueOrDefault(DB_PASSWORD, ""));
+        }
+        return DriverManager.getConnection(DB_URL);
     }
 
     public static void initDb() {
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
-            // Create Rooms
             stmt.execute("CREATE TABLE IF NOT EXISTS rooms (" +
-                    "roomNumber TEXT PRIMARY KEY, " +
-                    "roomType TEXT, " +
-                    "pricePerDay REAL, " +
-                    "available INTEGER)");
+                    "roomNumber VARCHAR(50) PRIMARY KEY, " +
+                    "roomType VARCHAR(50), " +
+                    "pricePerDay DOUBLE, " +
+                    "available BOOLEAN)");
 
-            // Create Customers
             stmt.execute("CREATE TABLE IF NOT EXISTS customers (" +
-                    "contactNumber TEXT PRIMARY KEY, " +
-                    "name TEXT, " +
-                    "email TEXT)");
+                    "contactNumber VARCHAR(50) PRIMARY KEY, " +
+                    "name VARCHAR(255), " +
+                    "email VARCHAR(255))");
 
-            // Create Bookings
             stmt.execute("CREATE TABLE IF NOT EXISTS bookings (" +
-                    "bookingId TEXT PRIMARY KEY, " +
-                    "customerContact TEXT, " +
-                    "roomNumber TEXT, " +
-                    "checkIn TEXT, " +
-                    "checkOut TEXT)");
+                    "bookingId VARCHAR(50) PRIMARY KEY, " +
+                    "customerContact VARCHAR(50), " +
+                    "roomNumber VARCHAR(50), " +
+                    "checkIn VARCHAR(20), " +
+                    "checkOut VARCHAR(20))");
 
-            // Create Bills
             stmt.execute("CREATE TABLE IF NOT EXISTS bills (" +
-                    "billId TEXT PRIMARY KEY, " +
-                    "bookingId TEXT, " +
-                    "totalAmount REAL, " +
-                    "generationDate TEXT, " +
-                    "isPaid INTEGER)");
+                    "billId VARCHAR(50) PRIMARY KEY, " +
+                    "bookingId VARCHAR(50), " +
+                    "totalAmount DOUBLE, " +
+                    "generationDate VARCHAR(20), " +
+                    "isPaid BOOLEAN)");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS app_texts (" +
+                    "sectionName VARCHAR(100) NOT NULL, " +
+                    "keyName VARCHAR(100) NOT NULL, " +
+                    "value VARCHAR(4000), " +
+                    "PRIMARY KEY (sectionName, keyName))");
 
         } catch (SQLException e) {
             System.err.println("[DB INIT ERROR] " + e.getMessage());
         }
+    }
+
+    private static String valueOrDefault(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
     }
 }

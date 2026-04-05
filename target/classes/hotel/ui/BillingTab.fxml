@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hotel.ui.BillingTabController">
+<ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="hotel.ui.BillingTabController">
     <VBox spacing="18" styleClass="tab-content">
         <padding>
             <Insets top="32" right="32" bottom="32" left="32" />
         </padding>
-        <Label text="Billing &amp; Checkout Management" styleClass="section-title" />
+
+        <Label fx:id="billingTitleLabel" text="Billing and Checkout Management" styleClass="section-title" />
         <Separator opacity="0.3" />
 
-        <HBox spacing="15" alignment="CENTER_LEFT">
-            <Label text="Select Active Booking: " styleClass="form-label" />
-            <ComboBox fx:id="bookingComboBox" prefWidth="350" styleClass="input-field" promptText="Choose a booking to check out" />
-            <Button text="💳 Check Out &amp; Bill" styleClass="btn, btn-primary" onAction="#handleCheckOutAction" />
-            <Button text="↻ Refresh" styleClass="btn, btn-info" onAction="#loadBookings" />
+        <HBox spacing="15" alignment="CENTER_LEFT" styleClass="form-grid">
+            <Label fx:id="selectActiveBookingLabel" text="Select Active Booking:" styleClass="form-label" />
+            <ComboBox fx:id="bookingComboBox" prefWidth="420" styleClass="input-field"
+                      promptText="Choose a booking to check out" />
+            <Button fx:id="checkOutButton" text="Check Out and Bill" styleClass="btn, btn-primary" onAction="#handleCheckOutAction" />
+            <Button fx:id="refreshButton" text="Refresh" styleClass="btn, btn-info" onAction="#loadBookings" />
         </HBox>
 
         <Separator opacity="0.3" />
-        <Label text="Recent Invoices" styleClass="section-title" />
+        <Label fx:id="recentInvoicesLabel" text="Recent Invoices" styleClass="section-title" />
 
         <TableView fx:id="billsTable" prefHeight="350" styleClass="data-table">
             <placeholder>
-                <Label text="No invoices generated."/>
+                <Label fx:id="billsPlaceholderLabel" text="No invoices generated." />
             </placeholder>
             <columns>
                 <TableColumn fx:id="colBillId" text="Invoice ID" />
@@ -34,7 +45,7 @@
                 <TableColumn fx:id="colAction" text="Action" />
             </columns>
             <columnResizePolicy>
-                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
     </VBox>
