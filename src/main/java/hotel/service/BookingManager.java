@@ -221,24 +221,59 @@ public class BookingManager {
     }
 
     private Booking createBillSnapshotBooking(ResultSet rs) throws SQLException {
+        String roomNumber = safeString(rs.getString("roomNumber"));
+        Room existingRoom = rooms.stream()
+                .filter(room -> room.getRoomNumber().equalsIgnoreCase(roomNumber))
+                .findFirst()
+                .orElse(null);
+
+        RoomType roomType = parseRoomType(rs.getString("roomType"),
+                existingRoom != null ? existingRoom.getRoomType() : RoomType.SINGLE);
+        double pricePerDay = existingRoom != null ? existingRoom.getPricePerDay() : 0.0;
+
         Customer customer = new Customer(
-                rs.getString("customerName"),
-                rs.getString("customerContact"),
-                rs.getString("customerEmail"));
+                safeString(rs.getString("customerName")),
+                safeString(rs.getString("customerContact")),
+                safeString(rs.getString("customerEmail")));
         Room room = new Room(
-                rs.getString("roomNumber"),
-                RoomType.valueOf(rs.getString("roomType")),
-                0.0,
+                roomNumber,
+                roomType,
+                pricePerDay,
                 false);
         return new Booking(
-                rs.getString("bookingId"),
+                safeString(rs.getString("bookingId")),
                 customer,
                 room,
-                LocalDate.parse(rs.getString("checkIn"), DATE_FMT),
-                LocalDate.parse(rs.getString("checkOut"), DATE_FMT));
+                parseDateOrDefault(rs.getString("checkIn"), rs.getString("generationDate"), LocalDate.now()),
+                parseDateOrDefault(rs.getString("checkOut"), rs.getString("generationDate"), LocalDate.now().plusDays(1)));
     }
 
     private void logSqlError(String context, SQLException e) {
         System.err.println(DB_ERROR_PREFIX + " " + context + ": " + e.getMessage());
+    }
+
+    private RoomType parseRoomType(String value, RoomType fallback) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            return RoomType.valueOf(value);
+        } catch (IllegalArgumentException ex) {
+            return fallback;
+        }
+    }
+
+    private LocalDate parseDateOrDefault(String value, String fallbackValue, LocalDate defaultValue) {
+        if (value != null && !value.isBlank()) {
+            return LocalDate.parse(value, DATE_FMT);
+        }
+        if (fallbackValue != null && !fallbackValue.isBlank()) {
+            return LocalDate.parse(fallbackValue, DATE_FMT);
+        }
+        return defaultValue;
+    }
+
+    private String safeString(String value) {
+        return value == null ? "" : value;
     }
 }
