@@ -2,3 +2,5 @@ target/
 database.sqlite
 hotel_data.json
 .vscode/settings.json
+TYPOGRAPHY_REFERENCE.md
+TYPOGRAPHY_UPDATED.md

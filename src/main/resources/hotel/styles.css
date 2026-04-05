@@ -1,5 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap");
+
 .root {
-    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-font-size: 14px;
     -fx-background-color: #002b36;
     -fx-text-fill: #dce7e8;
@@ -17,6 +19,7 @@
 }
 
 .brand-eyebrow {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #2aa198;
     -fx-font-size: 11px;
     -fx-font-weight: 500;
@@ -24,17 +27,19 @@
 }
 
 .brand-wordmark {
-    -fx-font-family: "Segoe UI", "Georgia", serif;
+    -fx-font-family: "Playfair Display", "Georgia", serif;
     -fx-text-fill: #fff1bf;
     -fx-font-size: 30px;
-    -fx-font-weight: 900;
+    -fx-font-weight: 700;
+    -fx-letter-spacing: 1.5px;
 }
 
 .brand-support {
-    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-family: "Cormorant Garamond", "Georgia", serif;
     -fx-text-fill: #d7e3e4;
     -fx-font-size: 12px;
     -fx-font-weight: 400;
+    -fx-font-style: italic;
 }
 
 .logo-badge,
@@ -59,24 +64,28 @@
 }
 
 .meta-label {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #d4e0e1;
     -fx-font-size: 12px;
     -fx-font-weight: 400;
 }
 
 .operator-name {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #eef7f7;
     -fx-font-size: 15px;
     -fx-font-weight: 600;
 }
 
 .status-pill {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #22c55e;
     -fx-font-size: 12px;
     -fx-font-weight: 500;
 }
 
 .operator-avatar {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-background-color: #073642;
     -fx-border-color: #1f4d57;
     -fx-border-width: 1;
@@ -99,9 +108,10 @@
 }
 
 .sidebar-section-label {
+    -fx-font-family: "Playfair Display", "Georgia", serif;
     -fx-text-fill: #dce7e8;
     -fx-font-size: 20px;
-    -fx-font-weight: 800;
+    -fx-font-weight: 700;
     -fx-letter-spacing: 0.6px;
     -fx-padding: 0 0 0 4;
 }
@@ -115,6 +125,7 @@
 }
 
 .nav-button {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-background-color: transparent;
     -fx-background-radius: 14;
     -fx-border-radius: 14;
@@ -162,12 +173,14 @@
 }
 
 .nav-title {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #f2f8f8;
     -fx-font-size: 15px;
     -fx-font-weight: 700;
 }
 
 .nav-subtitle {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #b7c7c9;
     -fx-font-size: 11px;
     -fx-font-weight: 400;
@@ -202,13 +215,14 @@
 }
 
 .workspace-title {
-    -fx-font-family: "Segoe UI", "Georgia", serif;
+    -fx-font-family: "Playfair Display", "Georgia", serif;
     -fx-text-fill: #fff4cf;
     -fx-font-size: 32px;
-    -fx-font-weight: 900;
+    -fx-font-weight: 700;
 }
 
 .workspace-subtitle {
+    -fx-font-family: "Cormorant Garamond", "Georgia", serif;
     -fx-text-fill: #edf5f5;
     -fx-font-size: 14px;
     -fx-font-weight: 500;
@@ -223,10 +237,10 @@
 }
 
 .section-title {
-    -fx-font-family: "Segoe UI", "Georgia", serif;
+    -fx-font-family: "Playfair Display", "Georgia", serif;
     -fx-text-fill: #fff4cf;
     -fx-font-size: 24px;
-    -fx-font-weight: 900;
+    -fx-font-weight: 700;
 }
 
 .form-grid,
@@ -240,18 +254,21 @@
 }
 
 .form-label {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #f0f7f7;
     -fx-font-size: 14px;
     -fx-font-weight: 600;
 }
 
 .filter-label {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #edf5f5;
     -fx-font-size: 14px;
     -fx-font-weight: 500;
 }
 
 .summary-label {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #cb4b16;
     -fx-font-size: 15px;
     -fx-font-weight: 500;
@@ -261,6 +278,7 @@
 .combo-box-base,
 .date-picker,
 .menu-button {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-background-color: #073642;
     -fx-background-radius: 14;
     -fx-border-color: #586e75;
@@ -346,6 +364,7 @@
 }
 
 .lux-date-picker > .text-field {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-background-radius: 0;
@@ -485,6 +504,7 @@
 }
 
 .btn {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-background-radius: 14;
     -fx-padding: 12 20 12 20;
     -fx-font-size: 13px;
@@ -544,6 +564,7 @@
 }
 
 .data-table .column-header .label {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #eee8d5;
     -fx-font-size: 12.5px;
     -fx-font-weight: 500;
@@ -569,6 +590,7 @@
 }
 
 .data-table .table-cell {
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-text-fill: #dce7e8;
     -fx-padding: 0 16 0 16;
     -fx-alignment: center-left;
@@ -645,13 +667,13 @@
 
 .label {
     -fx-text-fill: #e7efef;
-    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-font-weight: 400;
 }
 
 .text-input {
     -fx-text-fill: #eef7f7;
     -fx-prompt-text-fill: #586e75;
-    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-family: "Inter", "Segoe UI Variable", "Segoe UI", sans-serif;
     -fx-font-weight: 400;
 }
