@@ -14,6 +14,7 @@ import java.util.Map;
 public final class AppText {
 
     private static final AppText INSTANCE = new AppText();
+    private static final Locale INDIAN_LOCALE = new Locale("en", "IN");
 
     private final Map<String, String> values = new LinkedHashMap<>();
 
@@ -40,8 +41,12 @@ public final class AppText {
     }
 
     public String money(double amount) {
-        NumberFormat fmt = NumberFormat.getNumberInstance(new Locale("en", "IN"));
-        return "\u20b9 " + fmt.format(amount);
+        return "\u20b9 " + amount(amount);
+    }
+
+    public String amount(double amount) {
+        NumberFormat fmt = NumberFormat.getNumberInstance(INDIAN_LOCALE);
+        return fmt.format(amount);
     }
 
     private void seedDefaults() {

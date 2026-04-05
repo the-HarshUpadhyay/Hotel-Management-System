@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class BookingManager {
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final String DB_ERROR_PREFIX = "[DB]";
 
     private final ObservableList<Room> rooms = FXCollections.observableArrayList();
     private final ObservableList<Booking> bookings = FXCollections.observableArrayList();
@@ -50,7 +51,9 @@ public class BookingManager {
             stmt.setInt(4, 1);
             stmt.executeUpdate();
             rooms.add(room);
-        } catch (SQLException e) { System.err.println(e.getMessage()); }
+        } catch (SQLException e) {
+            logSqlError("Add room", e);
+        }
     }
 
     public Booking bookRoom(String customerName, String contactNumber, String email, Room room, LocalDate checkIn, LocalDate checkOut) {
@@ -89,7 +92,9 @@ public class BookingManager {
 
             room.setAvailable(false);
             bookings.add(booking);
-        } catch (SQLException e) { System.err.println(e.getMessage()); }
+        } catch (SQLException e) {
+            logSqlError("Book room", e);
+        }
 
         return booking;
     }
@@ -101,12 +106,21 @@ public class BookingManager {
         Bill bill = new Bill(billId, booking, booking.calculateTotalAmount(), LocalDate.now(), false);
 
         try (Connection conn = DatabaseHelper.getConnection()) {
-            try (PreparedStatement insertBill = conn.prepareStatement("INSERT INTO bills VALUES (?, ?, ?, ?, ?)")) {
+            try (PreparedStatement insertBill = conn.prepareStatement(
+                    "INSERT INTO bills (billId, bookingId, totalAmount, generationDate, isPaid, customerName, customerContact, customerEmail, roomNumber, roomType, checkIn, checkOut) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 insertBill.setString(1, bill.getBillId());
                 insertBill.setString(2, booking.getBookingId());
                 insertBill.setDouble(3, bill.getTotalAmount());
                 insertBill.setString(4, bill.getGenerationDate().format(DATE_FMT));
                 insertBill.setInt(5, 0); // Not paid
+                insertBill.setString(6, booking.getCustomer().getName());
+                insertBill.setString(7, booking.getCustomer().getContactNumber());
+                insertBill.setString(8, booking.getCustomer().getEmail());
+                insertBill.setString(9, booking.getRoom().getRoomNumber());
+                insertBill.setString(10, booking.getRoom().getRoomType().name());
+                insertBill.setString(11, booking.getCheckInDate().format(DATE_FMT));
+                insertBill.setString(12, booking.getCheckOutDate().format(DATE_FMT));
                 insertBill.executeUpdate();
             }
 
@@ -123,7 +137,9 @@ public class BookingManager {
             booking.getRoom().setAvailable(true);
             bookings.remove(booking);
             bills.add(bill);
-        } catch (SQLException e) { System.err.println(e.getMessage()); }
+        } catch (SQLException e) {
+            logSqlError("Checkout and bill", e);
+        }
         return bill;
     }
 
@@ -137,7 +153,9 @@ public class BookingManager {
             
             int idx = bills.indexOf(bill);
             if(idx != -1) bills.set(idx, bill);
-        } catch (SQLException e) { System.err.println(e.getMessage()); }
+        } catch (SQLException e) {
+            logSqlError("Mark bill paid", e);
+        }
     }
 
     public void deleteRoom(Room room) {
@@ -147,7 +165,9 @@ public class BookingManager {
             stmt.setString(1, room.getRoomNumber());
             stmt.executeUpdate();
             rooms.remove(room);
-        } catch (SQLException e) { System.err.println(e.getMessage()); }
+        } catch (SQLException e) {
+            logSqlError("Delete room", e);
+        }
     }
 
     private void loadFromDatabase() {
@@ -169,6 +189,18 @@ public class BookingManager {
                 }
             }
 
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(
+                    "SELECT billId, bookingId, totalAmount, generationDate, isPaid, customerName, customerContact, customerEmail, roomNumber, roomType, checkIn, checkOut FROM bills")) {
+                while (rs.next()) {
+                    bills.add(new Bill(
+                            rs.getString("billId"),
+                            createBillSnapshotBooking(rs),
+                            rs.getDouble("totalAmount"),
+                            LocalDate.parse(rs.getString("generationDate"), DATE_FMT),
+                            rs.getBoolean("isPaid")));
+                }
+            }
+
             // Restore counters
             try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT MAX(CAST(SUBSTR(bookingId, 3) AS INTEGER)) FROM bookings")) {
                 if (rs.next() && rs.getInt(1) > 0) idCounter.set(rs.getInt(1) + 1);
@@ -176,7 +208,9 @@ public class BookingManager {
             try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT MAX(CAST(SUBSTR(billId, 4) AS INTEGER)) FROM bills")) {
                 if (rs.next() && rs.getInt(1) > 0) billCounter.set(rs.getInt(1) + 1);
             }
-        } catch (SQLException e) { System.err.println("[DB Load]" + e.getMessage()); }
+        } catch (SQLException e) {
+            logSqlError("Load database", e);
+        }
     }
 
     private void seedSampleRooms() {
@@ -184,5 +218,27 @@ public class BookingManager {
         addRoom("102", RoomType.SINGLE, 800.0);
         addRoom("201", RoomType.DOUBLE, 1400.0);
         addRoom("301", RoomType.DELUXE, 2500.0);
+    }
+
+    private Booking createBillSnapshotBooking(ResultSet rs) throws SQLException {
+        Customer customer = new Customer(
+                rs.getString("customerName"),
+                rs.getString("customerContact"),
+                rs.getString("customerEmail"));
+        Room room = new Room(
+                rs.getString("roomNumber"),
+                RoomType.valueOf(rs.getString("roomType")),
+                0.0,
+                false);
+        return new Booking(
+                rs.getString("bookingId"),
+                customer,
+                room,
+                LocalDate.parse(rs.getString("checkIn"), DATE_FMT),
+                LocalDate.parse(rs.getString("checkOut"), DATE_FMT));
+    }
+
+    private void logSqlError(String context, SQLException e) {
+        System.err.println(DB_ERROR_PREFIX + " " + context + ": " + e.getMessage());
     }
 }

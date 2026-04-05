@@ -178,7 +178,7 @@ public class CustomerTab {
 
         lblRevenue.setText(text.format("CUSTOMERS", "summary_total_revenue",
                 "Total Revenue: \u20b9 {amount}",
-                AppText.tokens("amount", text.money(revenue).replace("\u20b9 ", ""))));
+                AppText.tokens("amount", text.amount(revenue))));
         lblRevenue.getStyleClass().add("summary-label");
     }
 }

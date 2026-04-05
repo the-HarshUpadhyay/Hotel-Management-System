@@ -1,7 +1,9 @@
 package hotel.service;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -51,6 +53,14 @@ public class DatabaseHelper {
                     "value VARCHAR(4000), " +
                     "PRIMARY KEY (sectionName, keyName))");
 
+            ensureColumnExists(conn, "bills", "customerName", "VARCHAR(255)");
+            ensureColumnExists(conn, "bills", "customerContact", "VARCHAR(50)");
+            ensureColumnExists(conn, "bills", "customerEmail", "VARCHAR(255)");
+            ensureColumnExists(conn, "bills", "roomNumber", "VARCHAR(50)");
+            ensureColumnExists(conn, "bills", "roomType", "VARCHAR(50)");
+            ensureColumnExists(conn, "bills", "checkIn", "VARCHAR(20)");
+            ensureColumnExists(conn, "bills", "checkOut", "VARCHAR(20)");
+
         } catch (SQLException e) {
             System.err.println("[DB INIT ERROR] " + e.getMessage());
         }
@@ -58,5 +68,19 @@ public class DatabaseHelper {
 
     private static String valueOrDefault(String value, String fallback) {
         return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private static void ensureColumnExists(Connection conn, String tableName, String columnName, String definition)
+            throws SQLException {
+        DatabaseMetaData metaData = conn.getMetaData();
+        try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
+            if (columns.next()) {
+                return;
+            }
+        }
+
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + definition);
+        }
     }
 }

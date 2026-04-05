@@ -26,6 +26,12 @@ import java.time.format.DateTimeFormatter;
 
 public class BillingTabController {
     private static final DateTimeFormatter RECEIPT_DATE_FMT = DateTimeFormatter.ofPattern("dd MMM yyyy");
+    private static final String RECEIPT_TITLE_STYLE = "-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: #17323a;";
+    private static final String RECEIPT_HOTEL_STYLE = "-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #17323a;";
+    private static final String RECEIPT_META_STYLE = "-fx-font-size: 11px; -fx-text-fill: #52656b;";
+    private static final String RECEIPT_LABEL_STYLE = "-fx-font-size: 11px; -fx-font-weight: 700; -fx-text-fill: #52656b;";
+    private static final String RECEIPT_VALUE_STYLE = "-fx-font-size: 13px; -fx-text-fill: #17323a;";
+    private static final String RECEIPT_TOTAL_STYLE = "-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #17323a;";
 
     private BookingManager manager;
     private final AppText text = AppText.get();
@@ -151,7 +157,7 @@ public class BillingTabController {
                         AppText.tokens("billId", newBill.getBillId()))
                         + "\n"
                         + text.format("BILLING", "alert_checkout_complete_line_2", "Total amount: \u20b9 {amount}",
-                        AppText.tokens("amount", text.money(newBill.getTotalAmount()).replace("\u20b9 ", "")))
+                        AppText.tokens("amount", text.amount(newBill.getTotalAmount())))
                         + "\n"
                         + text.text("BILLING", "alert_checkout_complete_line_3", "Room is now available."));
     }
@@ -213,16 +219,16 @@ public class BillingTabController {
         Booking booking = bill.getBooking();
 
         Label hotelName = new Label(text.text("HEADER", "brand_wordmark_expanded", "Hotel Command Center"));
-        hotelName.setStyle("-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #17323a;");
+        hotelName.setStyle(RECEIPT_HOTEL_STYLE);
 
         Label hotelSub = new Label(text.text("HEADER", "brand_support",
                 "Modern front desk workspace for rooms, guests, bookings, and billing"));
         hotelSub.setWrapText(true);
         hotelSub.setTextAlignment(TextAlignment.CENTER);
-        hotelSub.setStyle("-fx-font-size: 11px; -fx-text-fill: #52656b;");
+        hotelSub.setStyle(RECEIPT_META_STYLE);
 
         Label receiptTitle = new Label(text.text("BILLING", "receipt_title", "Payment Receipt"));
-        receiptTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: #17323a;");
+        receiptTitle.setStyle(RECEIPT_TITLE_STYLE);
 
         VBox details = new VBox(8,
                 receiptLine(text.text("BILLING", "receipt_invoice_id", "Invoice ID"), bill.getBillId()),
@@ -245,13 +251,13 @@ public class BillingTabController {
 
         Label totalLabel = new Label(
                 text.text("BILLING", "receipt_total", "Total Paid") + ": " + text.money(bill.getTotalAmount()));
-        totalLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #17323a;");
+        totalLabel.setStyle(RECEIPT_TOTAL_STYLE);
 
         Label footer = new Label(text.text("BILLING", "receipt_footer",
                 "Thank you for choosing Taj Mahal hospitality."));
         footer.setWrapText(true);
         footer.setTextAlignment(TextAlignment.CENTER);
-        footer.setStyle("-fx-font-size: 11px; -fx-text-fill: #52656b;");
+        footer.setStyle(RECEIPT_META_STYLE);
 
         Separator separator = new Separator();
 
@@ -267,12 +273,12 @@ public class BillingTabController {
 
     private VBox receiptLine(String labelText, String valueText) {
         Label label = new Label(labelText);
-        label.setStyle("-fx-font-size: 11px; -fx-font-weight: 700; -fx-text-fill: #52656b;");
+        label.setStyle(RECEIPT_LABEL_STYLE);
 
         Label value = new Label(valueText);
         value.setWrapText(true);
         value.setMaxWidth(Double.MAX_VALUE);
-        value.setStyle("-fx-font-size: 13px; -fx-text-fill: #17323a;");
+        value.setStyle(RECEIPT_VALUE_STYLE);
 
         VBox line = new VBox(2, label, value);
         line.setFillWidth(true);
