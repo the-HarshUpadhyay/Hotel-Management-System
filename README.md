@@ -13,7 +13,7 @@ The application is now fully JDBC-based for operational data and UI copy. It can
 - Room inventory with pricing, availability status, filtering, and protected deletion for occupied rooms
 - Reservation flow with guest details, luxury-styled date pickers, disabled past dates, and highlighted current day
 - Guest registry with live search and revenue summary
-- Billing workflow with checkout invoice generation, payment marking, and receipt printing
+- Billing workflow with checkout invoice generation, payment marking, receipt printing, and invoice history persistence
 - JDBC-backed persistence for rooms, customers, bookings, bills, and UI text content
 - Database-seeded UI copy through the `app_texts` table
 
@@ -112,9 +112,16 @@ The application initializes and uses these tables:
 - `bills`
 - `app_texts`
 
+## Billing And Receipts
+
+- Checkout creates an invoice entry in the `bills` table
+- Paid bills can be printed from the billing screen
+- Legacy bill rows are loaded safely on startup for backward compatibility
+
 ## Notes
 
 - Sample rooms are seeded automatically when the database is empty.
 - UI copy is loaded from the database instead of local text files.
 - Receipt printing is triggered from the billing workflow after settlement.
+- Older bill records are handled safely during startup so existing databases do not crash the app.
 - SQLite is still JDBC-based but file-backed; use PostgreSQL or MySQL if you want a non-file database deployment.
