@@ -79,6 +79,7 @@ public class HotelApp extends Application {
         scene.getStylesheets().add(css);
 
         primaryStage.setTitle(text.text("APP", "window_title", "Hotel Management System"));
+        primaryStage.getIcons().add(new Image(getClass().getResource("/hotel/logo.png").toExternalForm()));
         primaryStage.setMinWidth(1080);
         primaryStage.setMinHeight(720);
         primaryStage.setScene(scene);
@@ -124,8 +125,7 @@ public class HotelApp extends Application {
         presence.getStyleClass().add("status-pill");
         statusBox.getChildren().addAll(currentDate, operator, presence);
 
-        Label avatar = new Label(text.text("HEADER", "operator_avatar", "AD"));
-        avatar.getStyleClass().add("operator-avatar");
+        StackPane avatar = buildAdministratorBadge(48);
 
         presenceBox.getChildren().addAll(statusBox, avatar);
 
@@ -318,7 +318,7 @@ public class HotelApp extends Application {
     }
 
     private void updateToggleButton(Button toggleButton) {
-        toggleButton.setGraphic(buildCollapseBadge(sidebarExpanded ? 42 : 38));
+        toggleButton.setGraphic(buildToggleBadge(sidebarExpanded ? 42 : 38));
         toggleButton.setAlignment(Pos.CENTER);
         toggleButton.setText(null);
     }
@@ -339,19 +339,43 @@ public class HotelApp extends Application {
         return badge;
     }
 
-    private StackPane buildCollapseBadge(double size) {
+    private StackPane buildToggleBadge(double size) {
         StackPane badge = new StackPane();
         badge.getStyleClass().add("logo-badge-compact");
         badge.setPrefSize(size, size);
         badge.setMinSize(size, size);
         badge.setMaxSize(size, size);
 
-        ImageView iconView = new ImageView(new Image(Path.of("data", "icons", "collapse.png").toUri().toString()));
+        String toggleIcon = sidebarExpanded ? "collapse.png" : "expand.png";
+        ImageView iconView = new ImageView(new Image(Path.of("data", "icons", toggleIcon).toUri().toString()));
         iconView.getStyleClass().add("collapse-icon");
         iconView.setPreserveRatio(true);
         iconView.setFitWidth(size - 16);
         iconView.setFitHeight(size - 16);
         badge.getChildren().add(iconView);
+        return badge;
+    }
+
+    private StackPane buildAdministratorBadge(double size) {
+        StackPane badge = new StackPane();
+        badge.getStyleClass().add("operator-avatar");
+        badge.setPrefSize(size, size);
+        badge.setMinSize(size, size);
+        badge.setMaxSize(size, size);
+
+        Path administratorImage = Path.of("data", "icons", "administrator.png");
+        if (Files.exists(administratorImage)) {
+            ImageView avatarView = new ImageView(new Image(administratorImage.toUri().toString()));
+            avatarView.setPreserveRatio(true);
+            avatarView.setFitWidth(size - 8);
+            avatarView.setFitHeight(size - 8);
+            badge.getChildren().add(avatarView);
+            return badge;
+        }
+
+        Label fallback = new Label(text.text("HEADER", "operator_avatar", "AD"));
+        fallback.getStyleClass().add("operator-avatar");
+        badge.getChildren().add(fallback);
         return badge;
     }
 

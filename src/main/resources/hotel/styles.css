@@ -2,7 +2,7 @@
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
     -fx-font-size: 14px;
     -fx-background-color: #002b36;
-    -fx-text-fill: #839496;
+    -fx-text-fill: #dce7e8;
     -fx-letter-spacing: -0.2px;
 }
 
@@ -24,15 +24,15 @@
 }
 
 .brand-wordmark {
-    -fx-font-family: "Playfair Display", "Georgia", serif;
-    -fx-text-fill: #b58900;
-    -fx-font-size: 28px;
-    -fx-font-weight: 600;
+    -fx-font-family: "Segoe UI", "Georgia", serif;
+    -fx-text-fill: #fff1bf;
+    -fx-font-size: 30px;
+    -fx-font-weight: 900;
 }
 
 .brand-support {
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
-    -fx-text-fill: #839496;
+    -fx-text-fill: #d7e3e4;
     -fx-font-size: 12px;
     -fx-font-weight: 400;
 }
@@ -59,15 +59,15 @@
 }
 
 .meta-label {
-    -fx-text-fill: #839496;
+    -fx-text-fill: #d4e0e1;
     -fx-font-size: 12px;
     -fx-font-weight: 400;
 }
 
 .operator-name {
-    -fx-text-fill: #839496;
+    -fx-text-fill: #eef7f7;
     -fx-font-size: 15px;
-    -fx-font-weight: 400;
+    -fx-font-weight: 600;
 }
 
 .status-pill {
@@ -77,8 +77,11 @@
 }
 
 .operator-avatar {
-    -fx-background-color: #d33682;
+    -fx-background-color: #073642;
+    -fx-border-color: #1f4d57;
+    -fx-border-width: 1;
     -fx-background-radius: 18;
+    -fx-border-radius: 18;
     -fx-padding: 12 13 12 13;
     -fx-text-fill: #fdf6e3;
     -fx-font-size: 12px;
@@ -96,10 +99,10 @@
 }
 
 .sidebar-section-label {
-    -fx-text-fill: #586e75;
-    -fx-font-size: 11px;
-    -fx-font-weight: 500;
-    -fx-letter-spacing: 1.6px;
+    -fx-text-fill: #dce7e8;
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-letter-spacing: 0.6px;
     -fx-padding: 0 0 0 4;
 }
 
@@ -159,13 +162,13 @@
 }
 
 .nav-title {
-    -fx-text-fill: #839496;
-    -fx-font-size: 14px;
-    -fx-font-weight: 500;
+    -fx-text-fill: #f2f8f8;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
 }
 
 .nav-subtitle {
-    -fx-text-fill: #586e75;
+    -fx-text-fill: #b7c7c9;
     -fx-font-size: 11px;
     -fx-font-weight: 400;
 }
@@ -199,16 +202,16 @@
 }
 
 .workspace-title {
-    -fx-font-family: "Playfair Display", "Georgia", serif;
-    -fx-text-fill: #b58900;
-    -fx-font-size: 28px;
-    -fx-font-weight: 600;
+    -fx-font-family: "Segoe UI", "Georgia", serif;
+    -fx-text-fill: #fff4cf;
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
 }
 
 .workspace-subtitle {
-    -fx-text-fill: #839496;
-    -fx-font-size: 13px;
-    -fx-font-weight: 400;
+    -fx-text-fill: #edf5f5;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
 }
 
 .workspace-content {
@@ -220,10 +223,10 @@
 }
 
 .section-title {
-    -fx-font-family: "Playfair Display", "Georgia", serif;
-    -fx-text-fill: #b58900;
-    -fx-font-size: 21px;
-    -fx-font-weight: 500;
+    -fx-font-family: "Segoe UI", "Georgia", serif;
+    -fx-text-fill: #fff4cf;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
 }
 
 .form-grid,
@@ -237,15 +240,15 @@
 }
 
 .form-label {
-    -fx-text-fill: #839496;
-    -fx-font-size: 13px;
-    -fx-font-weight: 400;
+    -fx-text-fill: #f0f7f7;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
 }
 
 .filter-label {
-    -fx-text-fill: #839496;
-    -fx-font-size: 13px;
-    -fx-font-weight: 400;
+    -fx-text-fill: #edf5f5;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
 }
 
 .summary-label {
@@ -263,7 +266,7 @@
     -fx-border-color: #586e75;
     -fx-border-width: 1;
     -fx-border-radius: 14;
-    -fx-text-fill: #839496;
+    -fx-text-fill: #eef7f7;
     -fx-padding: 12 16 12 16;
     -fx-min-width: 220;
     -fx-font-weight: 400;
@@ -296,7 +299,7 @@
 .combo-box-base .text,
 .date-picker .text,
 .menu-button .text {
-    -fx-fill: #839496;
+    -fx-fill: #eef7f7;
 }
 
 .input-field .prompt-text,
@@ -417,7 +420,7 @@
 
 .combo-box-base > .list-cell {
     -fx-background-color: transparent;
-    -fx-text-fill: #839496;
+    -fx-text-fill: #eef7f7;
 }
 
 .combo-box-popup .list-view {
@@ -431,7 +434,7 @@
 .combo-box-popup .list-cell {
     -fx-background-color: transparent;
     -fx-background-radius: 10;
-    -fx-text-fill: #839496;
+    -fx-text-fill: #e7efef;
     -fx-padding: 10 12 10 12;
 }
 
@@ -452,7 +455,7 @@
 
 .date-picker-popup .day-cell {
     -fx-background-color: transparent;
-    -fx-text-fill: #839496;
+    -fx-text-fill: #e4eded;
     -fx-background-radius: 10;
     -fx-border-radius: 10;
 }
@@ -566,7 +569,7 @@
 }
 
 .data-table .table-cell {
-    -fx-text-fill: #839496;
+    -fx-text-fill: #dce7e8;
     -fx-padding: 0 16 0 16;
     -fx-alignment: center-left;
     -fx-font-weight: 400;
@@ -577,7 +580,7 @@
 }
 
 .data-table .placeholder .label {
-    -fx-text-fill: #839496;
+    -fx-text-fill: #dce7e8;
     -fx-font-size: 15px;
     -fx-padding: 24 0 24 0;
 }
@@ -615,7 +618,7 @@
 
 .context-menu .menu-item .label,
 .context-menu .menu > .label {
-    -fx-text-fill: #839496;
+    -fx-text-fill: #e7efef;
 }
 
 .context-menu .menu-item:hover,
@@ -637,17 +640,17 @@
 
 .dialog-pane .content.label,
 .dialog-pane .header-panel .label {
-    -fx-text-fill: #839496;
+    -fx-text-fill: #e4eded;
 }
 
 .label {
-    -fx-text-fill: #839496;
+    -fx-text-fill: #e7efef;
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
     -fx-font-weight: 400;
 }
 
 .text-input {
-    -fx-text-fill: #839496;
+    -fx-text-fill: #eef7f7;
     -fx-prompt-text-fill: #586e75;
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
     -fx-font-weight: 400;
