@@ -1,0 +1,4 @@
+target/
+database.sqlite
+hotel_data.json
+.vscode/settings.json
