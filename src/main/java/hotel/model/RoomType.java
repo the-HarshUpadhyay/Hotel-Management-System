@@ -6,7 +6,10 @@ package hotel.model;
 public enum RoomType {
     SINGLE("Single"),
     DOUBLE("Double"),
-    DELUXE("Deluxe");
+    DELUXE("Deluxe"),
+    SUITE("Suite"),
+    FAMILY_SUITE("Family Suite"),
+    PRESIDENTIAL("Presidential Suite");
 
     private final String displayName;
 

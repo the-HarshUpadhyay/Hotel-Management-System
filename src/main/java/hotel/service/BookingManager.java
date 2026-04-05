@@ -228,8 +228,26 @@ public class BookingManager {
     private void seedSampleRooms() {
         addRoom("101", RoomType.SINGLE, 800.0);
         addRoom("102", RoomType.SINGLE, 800.0);
+        addRoom("103", RoomType.SINGLE, 850.0);
+        addRoom("104", RoomType.SINGLE, 850.0);
+        addRoom("105", RoomType.SINGLE, 900.0);
         addRoom("201", RoomType.DOUBLE, 1400.0);
+        addRoom("202", RoomType.DOUBLE, 1450.0);
+        addRoom("203", RoomType.DOUBLE, 1500.0);
+        addRoom("204", RoomType.DOUBLE, 1550.0);
+        addRoom("205", RoomType.DOUBLE, 1550.0);
         addRoom("301", RoomType.DELUXE, 2500.0);
+        addRoom("302", RoomType.DELUXE, 2600.0);
+        addRoom("303", RoomType.DELUXE, 2650.0);
+        addRoom("304", RoomType.DELUXE, 2700.0);
+        addRoom("401", RoomType.SUITE, 3800.0);
+        addRoom("402", RoomType.SUITE, 3900.0);
+        addRoom("403", RoomType.SUITE, 3950.0);
+        addRoom("501", RoomType.FAMILY_SUITE, 4700.0);
+        addRoom("502", RoomType.FAMILY_SUITE, 4800.0);
+        addRoom("503", RoomType.FAMILY_SUITE, 4900.0);
+        addRoom("601", RoomType.PRESIDENTIAL, 8200.0);
+        addRoom("602", RoomType.PRESIDENTIAL, 8400.0);
     }
 
     private Booking createBillSnapshotBooking(ResultSet rs) throws SQLException {

@@ -1,6 +1,5 @@
 target/
 database.sqlite
-
 .vscode/settings.json
 TYPOGRAPHY_REFERENCE.md
 TYPOGRAPHY_UPDATED.md
