@@ -1,0 +1,320 @@
+package hotel.service;
+
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import hotel.model.*;
+import javafx.collections.*;
+
+import java.io.*;
+import java.lang.reflect.Type;
+import java.nio.file.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+/**
+ * BookingManager acts as the central service class (business logic layer).
+ *
+ * Responsibilities:
+ *  - Maintain in-memory lists of rooms and bookings (ObservableList for JavaFX binding)
+ *  - Validate booking rules (availability check, date validation)
+ *  - Persist data to / from JSON file using Gson
+ *  - Pre-seed sample rooms on first run
+ *
+ * Follows Single Responsibility Principle; UI classes delegate all data
+ * operations here.
+ */
+public class BookingManager {
+
+    // ---- Constants ----
+    private static final String DATA_FILE = "hotel_data.json";
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
+
+    // ---- State ----
+    private final ObservableList<Room>    rooms    = FXCollections.observableArrayList();
+    private final ObservableList<Booking> bookings = FXCollections.observableArrayList();
+    private final AtomicInteger idCounter = new AtomicInteger(1000);
+
+    // ---- Gson (custom LocalDate adapters) ----
+    private final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(LocalDate.class,
+                    (JsonSerializer<LocalDate>) (src, t, ctx) ->
+                            new JsonPrimitive(src.format(DATE_FMT)))
+            .registerTypeAdapter(LocalDate.class,
+                    (JsonDeserializer<LocalDate>) (json, t, ctx) ->
+                            LocalDate.parse(json.getAsString(), DATE_FMT))
+            .create();
+
+    // ---- Constructor ----
+
+    public BookingManager() {
+        loadFromFile(); // Attempt to load persisted data
+        if (rooms.isEmpty()) {
+            seedSampleRooms(); // Pre-load on first run
+        }
+    }
+
+    // ================================================================
+    //  PUBLIC API
+    // ================================================================
+
+    /**
+     * Returns the full observable room list (use for TableView binding).
+     */
+    public ObservableList<Room> getRooms() {
+        return rooms;
+    }
+
+    /**
+     * Returns view of only available rooms (used in booking ComboBox).
+     */
+    public ObservableList<Room> getAvailableRooms() {
+        return rooms.stream()
+                .filter(Room::isAvailable)
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+    }
+
+    /**
+     * Returns the full observable bookings list.
+     */
+    public ObservableList<Booking> getBookings() {
+        return bookings;
+    }
+
+    /**
+     * Adds a new room to the system after validation.
+     *
+     * @throws IllegalArgumentException if room number already exists or fields are invalid
+     */
+    public void addRoom(String roomNumber, RoomType type, double pricePerDay)
+            throws IllegalArgumentException {
+
+        roomNumber = roomNumber.trim();
+
+        if (roomNumber.isEmpty()) {
+            throw new IllegalArgumentException("Room number cannot be empty.");
+        }
+        if (pricePerDay <= 0) {
+            throw new IllegalArgumentException("Price per day must be positive.");
+        }
+        boolean duplicate = rooms.stream()
+                .anyMatch(r -> r.getRoomNumber().equalsIgnoreCase(roomNumber));
+        if (duplicate) {
+            throw new IllegalArgumentException(
+                    "Room number '" + roomNumber + "' already exists.");
+        }
+
+        rooms.add(new Room(roomNumber, type, pricePerDay, true));
+        saveToFile();
+    }
+
+    /**
+     * Books a room for a customer.
+     *
+     * @param customerName    guest's full name
+     * @param contactNumber   guest's phone number
+     * @param email           guest's email address
+     * @param room            the room to book
+     * @param checkIn         check-in date
+     * @param checkOut        check-out date (must be after check-in)
+     * @return the newly created Booking
+     * @throws IllegalArgumentException on validation failure
+     */
+    public Booking bookRoom(String customerName, String contactNumber, String email,
+                            Room room, LocalDate checkIn, LocalDate checkOut)
+            throws IllegalArgumentException {
+
+        // ---- Validate inputs ----
+        if (customerName == null || customerName.trim().isEmpty())
+            throw new IllegalArgumentException("Customer name is required.");
+        if (contactNumber == null || !contactNumber.matches("\\d{10}"))
+            throw new IllegalArgumentException("Contact number must be 10 digits.");
+        if (room == null)
+            throw new IllegalArgumentException("Please select a room.");
+        if (checkIn == null || checkOut == null)
+            throw new IllegalArgumentException("Check-in and check-out dates are required.");
+        if (!checkOut.isAfter(checkIn))
+            throw new IllegalArgumentException("Check-out date must be after check-in date.");
+        if (!room.isAvailable())
+            throw new IllegalArgumentException(
+                    "Room " + room.getRoomNumber() + " is already occupied.");
+
+        // ---- Create objects ----
+        Customer customer = new Customer(
+                customerName.trim(), contactNumber.trim(), email.trim());
+        String bookingId = "BK" + idCounter.getAndIncrement();
+        Booking booking  = new Booking(bookingId, customer, room, checkIn, checkOut);
+
+        // ---- Update state ----
+        room.setAvailable(false);
+        bookings.add(booking);
+        saveToFile();
+
+        return booking;
+    }
+
+    /**
+     * Checks out a guest: marks the room available and removes the booking.
+     *
+     * @param booking the booking to close
+     */
+    public void checkOut(Booking booking) {
+        if (booking == null) return;
+        booking.getRoom().setAvailable(true);
+        bookings.remove(booking);
+        saveToFile();
+    }
+
+    /**
+     * Deletes a room from the system. Only allowed if the room is currently available
+     * (i.e., not part of an active booking).
+     *
+     * @throws IllegalArgumentException if the room is currently occupied
+     */
+    public void deleteRoom(Room room) throws IllegalArgumentException {
+        if (!room.isAvailable()) {
+            throw new IllegalArgumentException(
+                    "Cannot delete Room " + room.getRoomNumber() +
+                    " — it currently has an active booking.");
+        }
+        rooms.remove(room);
+        saveToFile();
+    }
+
+    // ================================================================
+    //  FILE PERSISTENCE
+    // ================================================================
+
+    /**
+     * Serialises current state (rooms + bookings) to hotel_data.json.
+     * Called automatically after every mutating operation.
+     */
+    public void saveToFile() {
+        try {
+            Map<String, Object> data = new LinkedHashMap<>();
+
+            // Rooms — convert to plain maps (avoid JavaFX property serialization issues)
+            List<Map<String, Object>> roomList = new ArrayList<>();
+            for (Room r : rooms) {
+                Map<String, Object> m = new LinkedHashMap<>();
+                m.put("roomNumber",  r.getRoomNumber());
+                m.put("roomType",    r.getRoomType().name());
+                m.put("pricePerDay", r.getPricePerDay());
+                m.put("available",   r.isAvailable());
+                roomList.add(m);
+            }
+            data.put("rooms", roomList);
+
+            // Bookings
+            List<Map<String, Object>> bookingList = new ArrayList<>();
+            for (Booking b : bookings) {
+                Map<String, Object> m = new LinkedHashMap<>();
+                m.put("bookingId",    b.getBookingId());
+                m.put("customerName", b.getCustomer().getName());
+                m.put("contact",      b.getCustomer().getContactNumber());
+                m.put("email",        b.getCustomer().getEmail());
+                m.put("roomNumber",   b.getRoom().getRoomNumber());
+                m.put("checkIn",      b.getCheckInDate().format(DATE_FMT));
+                m.put("checkOut",     b.getCheckOutDate().format(DATE_FMT));
+                bookingList.add(m);
+            }
+            data.put("bookings",  bookingList);
+            data.put("idCounter", idCounter.get());
+
+            Files.writeString(Path.of(DATA_FILE), gson.toJson(data));
+
+        } catch (IOException e) {
+            System.err.println("[Warning] Could not save data: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Loads state from hotel_data.json on startup.
+     * Silently no-ops if file does not exist yet.
+     */
+    @SuppressWarnings("unchecked")
+    public void loadFromFile() {
+        Path path = Path.of(DATA_FILE);
+        if (!Files.exists(path)) return;
+
+        try {
+            String json = Files.readString(path);
+            Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+            Map<String, Object> data = gson.fromJson(json, mapType);
+
+            // ---- Restore rooms ----
+            List<Map<String, Object>> roomList =
+                    (List<Map<String, Object>>) data.get("rooms");
+            if (roomList != null) {
+                for (Map<String, Object> m : roomList) {
+                    String   num   = (String)  m.get("roomNumber");
+                    RoomType type  = RoomType.valueOf((String) m.get("roomType"));
+                    double   price = ((Number)  m.get("pricePerDay")).doubleValue();
+                    boolean  avail = (Boolean)  m.get("available");
+                    rooms.add(new Room(num, type, price, avail));
+                }
+            }
+
+            // ---- Restore bookings ----
+            List<Map<String, Object>> bookingList =
+                    (List<Map<String, Object>>) data.get("bookings");
+            if (bookingList != null) {
+                for (Map<String, Object> m : bookingList) {
+                    String bId      = (String) m.get("bookingId");
+                    String cName    = (String) m.get("customerName");
+                    String contact  = (String) m.get("contact");
+                    String email    = (String) m.getOrDefault("email", "");
+                    String rNum     = (String) m.get("roomNumber");
+                    LocalDate cIn   = LocalDate.parse((String) m.get("checkIn"), DATE_FMT);
+                    LocalDate cOut  = LocalDate.parse((String) m.get("checkOut"), DATE_FMT);
+
+                    // Match room reference
+                    Room room = rooms.stream()
+                            .filter(r -> r.getRoomNumber().equals(rNum))
+                            .findFirst().orElse(null);
+                    if (room != null) {
+                        Customer cust = new Customer(cName, contact, email);
+                        bookings.add(new Booking(bId, cust, room, cIn, cOut));
+                    }
+                }
+            }
+
+            // ---- Restore counter ----
+            if (data.containsKey("idCounter")) {
+                idCounter.set(((Number) data.get("idCounter")).intValue());
+            }
+
+        } catch (Exception e) {
+            System.err.println("[Warning] Could not load data: " + e.getMessage());
+            rooms.clear();
+            bookings.clear();
+        }
+    }
+
+    // ================================================================
+    //  SAMPLE DATA
+    // ================================================================
+
+    /**
+     * Pre-seeds 10 sample rooms for demonstration purposes.
+     * Called only when no persisted data file is found.
+     */
+    private void seedSampleRooms() {
+        rooms.addAll(
+            new Room("101", RoomType.SINGLE,  800.0, true),
+            new Room("102", RoomType.SINGLE,  800.0, true),
+            new Room("103", RoomType.SINGLE,  900.0, true),
+            new Room("201", RoomType.DOUBLE, 1400.0, true),
+            new Room("202", RoomType.DOUBLE, 1400.0, true),
+            new Room("203", RoomType.DOUBLE, 1600.0, true),
+            new Room("301", RoomType.DELUXE, 2500.0, true),
+            new Room("302", RoomType.DELUXE, 2500.0, true),
+            new Room("303", RoomType.DELUXE, 3000.0, true),
+            new Room("401", RoomType.DELUXE, 5000.0, true)
+        );
+        saveToFile();
+    }
+}

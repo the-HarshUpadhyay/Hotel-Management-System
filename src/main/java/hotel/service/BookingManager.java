@@ -1,0 +1,188 @@
+package hotel.service;
+
+import hotel.model.*;
+import javafx.collections.*;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+public class BookingManager {
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
+
+    private final ObservableList<Room> rooms = FXCollections.observableArrayList();
+    private final ObservableList<Booking> bookings = FXCollections.observableArrayList();
+    private final ObservableList<Bill> bills = FXCollections.observableArrayList();
+    private final AtomicInteger idCounter = new AtomicInteger(1000);
+    private final AtomicInteger billCounter = new AtomicInteger(1000);
+
+    public BookingManager() {
+        DatabaseHelper.initDb();
+        loadFromDatabase();
+        if (rooms.isEmpty()) {
+            seedSampleRooms();
+        }
+    }
+
+    public ObservableList<Room> getRooms() { return rooms; }
+    public ObservableList<Room> getAvailableRooms() {
+        return rooms.stream().filter(Room::isAvailable)
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+    }
+    public ObservableList<Booking> getBookings() { return bookings; }
+    public ObservableList<Bill> getBills() { return bills; }
+
+    public void addRoom(String roomNumber, RoomType type, double pricePerDay) {
+        String trimmed = roomNumber.trim();
+        if (trimmed.isEmpty() || pricePerDay <= 0) throw new IllegalArgumentException("Invalid room data.");
+        if (rooms.stream().anyMatch(r -> r.getRoomNumber().equalsIgnoreCase(trimmed))) {
+            throw new IllegalArgumentException("Room number exists.");
+        }
+        Room room = new Room(trimmed, type, pricePerDay, true);
+
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO rooms VALUES (?, ?, ?, ?)")) {
+            stmt.setString(1, room.getRoomNumber());
+            stmt.setString(2, room.getRoomType().name());
+            stmt.setDouble(3, room.getPricePerDay());
+            stmt.setInt(4, 1);
+            stmt.executeUpdate();
+            rooms.add(room);
+        } catch (SQLException e) { System.err.println(e.getMessage()); }
+    }
+
+    public Booking bookRoom(String customerName, String contactNumber, String email, Room room, LocalDate checkIn, LocalDate checkOut) {
+        if (!room.isAvailable()) throw new IllegalArgumentException("Room is occupied.");
+
+        Customer customer = new Customer(customerName.trim(), contactNumber.trim(), email.trim());
+        String bookingId = "BK" + idCounter.getAndIncrement();
+        Booking booking = new Booking(bookingId, customer, room, checkIn, checkOut);
+
+        try (Connection conn = DatabaseHelper.getConnection()) {
+            try (PreparedStatement checkCust = conn.prepareStatement("SELECT contactNumber FROM customers WHERE contactNumber=?")) {
+                checkCust.setString(1, customer.getContactNumber());
+                if (!checkCust.executeQuery().next()) {
+                    try (PreparedStatement insertCust = conn.prepareStatement("INSERT INTO customers VALUES (?, ?, ?)")) {
+                        insertCust.setString(1, customer.getContactNumber());
+                        insertCust.setString(2, customer.getName());
+                        insertCust.setString(3, customer.getEmail());
+                        insertCust.executeUpdate();
+                    }
+                }
+            }
+
+            try (PreparedStatement insertBooking = conn.prepareStatement("INSERT INTO bookings VALUES (?, ?, ?, ?, ?)")) {
+                insertBooking.setString(1, bookingId);
+                insertBooking.setString(2, customer.getContactNumber());
+                insertBooking.setString(3, room.getRoomNumber());
+                insertBooking.setString(4, checkIn.format(DATE_FMT));
+                insertBooking.setString(5, checkOut.format(DATE_FMT));
+                insertBooking.executeUpdate();
+            }
+
+            try (PreparedStatement updateRoom = conn.prepareStatement("UPDATE rooms SET available=0 WHERE roomNumber=?")) {
+                updateRoom.setString(1, room.getRoomNumber());
+                updateRoom.executeUpdate();
+            }
+
+            room.setAvailable(false);
+            bookings.add(booking);
+        } catch (SQLException e) { System.err.println(e.getMessage()); }
+
+        return booking;
+    }
+
+    public Bill checkOutAndBill(Booking booking) {
+        if (booking == null) return null;
+
+        String billId = "INV" + billCounter.getAndIncrement();
+        Bill bill = new Bill(billId, booking, booking.calculateTotalAmount(), LocalDate.now(), false);
+
+        try (Connection conn = DatabaseHelper.getConnection()) {
+            try (PreparedStatement insertBill = conn.prepareStatement("INSERT INTO bills VALUES (?, ?, ?, ?, ?)")) {
+                insertBill.setString(1, bill.getBillId());
+                insertBill.setString(2, booking.getBookingId());
+                insertBill.setDouble(3, bill.getTotalAmount());
+                insertBill.setString(4, bill.getGenerationDate().format(DATE_FMT));
+                insertBill.setInt(5, 0); // Not paid
+                insertBill.executeUpdate();
+            }
+
+            try (PreparedStatement delBooking = conn.prepareStatement("DELETE FROM bookings WHERE bookingId=?")) {
+                delBooking.setString(1, booking.getBookingId());
+                delBooking.executeUpdate();
+            }
+
+            try (PreparedStatement updateRoom = conn.prepareStatement("UPDATE rooms SET available=1 WHERE roomNumber=?")) {
+                updateRoom.setString(1, booking.getRoom().getRoomNumber());
+                updateRoom.executeUpdate();
+            }
+
+            booking.getRoom().setAvailable(true);
+            bookings.remove(booking);
+            bills.add(bill);
+        } catch (SQLException e) { System.err.println(e.getMessage()); }
+        return bill;
+    }
+
+    public void markBillPaid(Bill bill) {
+        if (bill == null) return;
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE bills SET isPaid=1 WHERE billId=?")) {
+            stmt.setString(1, bill.getBillId());
+            stmt.executeUpdate();
+            bill.setPaid(true);
+            
+            int idx = bills.indexOf(bill);
+            if(idx != -1) bills.set(idx, bill);
+        } catch (SQLException e) { System.err.println(e.getMessage()); }
+    }
+
+    public void deleteRoom(Room room) {
+        if (!room.isAvailable()) throw new IllegalArgumentException("Cannot delete occupied room.");
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM rooms WHERE roomNumber=?")) {
+            stmt.setString(1, room.getRoomNumber());
+            stmt.executeUpdate();
+            rooms.remove(room);
+        } catch (SQLException e) { System.err.println(e.getMessage()); }
+    }
+
+    private void loadFromDatabase() {
+        try (Connection conn = DatabaseHelper.getConnection()) {
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM rooms")) {
+                while (rs.next()) {
+                    rooms.add(new Room(rs.getString("roomNumber"), RoomType.valueOf(rs.getString("roomType")), rs.getDouble("pricePerDay"), rs.getInt("available") == 1));
+                }
+            }
+
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT b.bookingId, b.customerContact, b.roomNumber, b.checkIn, b.checkOut, c.name, c.email FROM bookings b JOIN customers c ON b.customerContact = c.contactNumber")) {
+                while (rs.next()) {
+                    Customer cust = new Customer(rs.getString("name"), rs.getString("customerContact"), rs.getString("email"));
+                    String rNum = rs.getString("roomNumber");
+                    Room r = rooms.stream().filter(rm -> rm.getRoomNumber().equals(rNum)).findFirst().orElse(null);
+                    if (r != null) {
+                        bookings.add(new Booking(rs.getString("bookingId"), cust, r, LocalDate.parse(rs.getString("checkIn"), DATE_FMT), LocalDate.parse(rs.getString("checkOut"), DATE_FMT)));
+                    }
+                }
+            }
+
+            // Restore counters
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT MAX(CAST(SUBSTR(bookingId, 3) AS INTEGER)) FROM bookings")) {
+                if (rs.next() && rs.getInt(1) > 0) idCounter.set(rs.getInt(1) + 1);
+            }
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT MAX(CAST(SUBSTR(billId, 4) AS INTEGER)) FROM bills")) {
+                if (rs.next() && rs.getInt(1) > 0) billCounter.set(rs.getInt(1) + 1);
+            }
+        } catch (SQLException e) { System.err.println("[DB Load]" + e.getMessage()); }
+    }
+
+    private void seedSampleRooms() {
+        addRoom("101", RoomType.SINGLE, 800.0);
+        addRoom("102", RoomType.SINGLE, 800.0);
+        addRoom("201", RoomType.DOUBLE, 1400.0);
+        addRoom("301", RoomType.DELUXE, 2500.0);
+    }
+}

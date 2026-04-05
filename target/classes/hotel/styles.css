@@ -1,0 +1,418 @@
+/* ================================================================
+   Hotel Management System — styles.css
+   Theme: Custom Palette (#222831, #393E46, #00ADB5, #EEEEEE)
+   ================================================================ */
+
+/* ---- Global / Root ---- */
+.root {
+    -fx-font-family: "Segoe UI", "Inter", "Outfit", "Open Sans", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #222831;
+}
+
+/* ---- App Header ---- */
+.app-header {
+    -fx-background-color: #393E46;
+    -fx-border-color: transparent transparent #00ADB5 transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 173, 181, 0.3), 15, 0, 0, 2);
+}
+
+.app-title {
+    -fx-font-family: "Blackletter", "Old English Text MT", "Cloister Black", "Fette Fraktur", "Gothic", serif;
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #00ADB5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 2);
+}
+
+.app-subtitle {
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #EEEEEE;
+    -fx-opacity: 0.7;
+    -fx-font-weight: 600;
+    -fx-letter-spacing: 1px;
+}
+
+/* ---- Tab Pane ---- */
+.main-tab-pane {
+    -fx-tab-min-height: 44px;
+    -fx-tab-max-height: 44px;
+}
+
+.main-tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.main-tab-pane .tab-header-area {
+    -fx-padding: 20 20 10 20;
+}
+
+.main-tab-pane .tab {
+    -fx-background-color: #393E46;
+    -fx-background-radius: 22;
+    -fx-border-radius: 22;
+    -fx-padding: 0 20 0 20;
+    -fx-cursor: hand;
+}
+
+.main-tab-pane .tab .tab-label {
+    -fx-text-fill: #EEEEEE;
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+}
+
+.main-tab-pane .tab:selected {
+    -fx-background-color: #00ADB5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 173, 181, 0.4), 10, 0, 0, 3);
+}
+
+.main-tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #222831;
+}
+
+.main-tab-pane .tab:hover {
+    -fx-background-color: rgba(57, 62, 70, 0.8);
+}
+
+.main-tab-pane .tab:selected:hover {
+    -fx-background-color: #008C94;
+}
+
+/* ---- Tab Content Area ---- */
+.tab-content {
+    -fx-background-color: transparent;
+}
+
+/* ---- Section Titles ---- */
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #EEEEEE;
+    -fx-padding: 0 0 10 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 2, 2);
+}
+
+/* ---- Form Grid (Card) ---- */
+.form-grid {
+    -fx-background-color: #393E46;
+    -fx-background-radius: 16;
+    -fx-padding: 24 28 24 28;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 20, 0, 0, 8);
+    -fx-border-color: rgba(238, 238, 238, 0.1);
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+}
+
+/* ---- Form Labels ---- */
+.form-label {
+    -fx-font-weight: 700;
+    -fx-text-fill: #EEEEEE;
+    -fx-font-size: 13.5px;
+}
+
+/* ---- Input Fields ---- */
+.input-field {
+    -fx-background-color: #222831;
+    -fx-border-color: rgba(238, 238, 238, 0.2);
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 14 10 14;
+    -fx-min-width: 220;
+    -fx-text-fill: #EEEEEE;
+    -fx-font-weight: 600;
+}
+
+.input-field:hover {
+    -fx-border-color: rgba(0, 173, 181, 0.5);
+}
+
+.input-field:focused {
+    -fx-border-color: #00ADB5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 173, 181, 0.5), 10, 0, 0, 0);
+}
+
+/* Placeholders */
+.input-field:focused .prompt-text, .input-field .prompt-text {
+    -fx-text-fill: rgba(238, 238, 238, 0.5);
+}
+
+/* Dropdown/DatePicker internal fixes for dark mode */
+.input-field .arrow-button {
+    -fx-background-color: transparent;
+}
+.input-field .arrow {
+    -fx-background-color: #EEEEEE;
+}
+.input-field .list-cell {
+    -fx-text-fill: #222831;
+}
+.input-field .date-picker-popup {
+    -fx-background-color: #EEEEEE;
+}
+
+/* ---- Buttons (base) ---- */
+.btn {
+    -fx-font-weight: 800;
+    -fx-font-size: 14px;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-padding: 10 22 10 22;
+    -fx-border-width: 0;
+    -fx-text-fill: #EEEEEE;
+}
+
+.btn:hover {
+    -fx-translate-y: -2;
+}
+
+.btn:pressed {
+    -fx-translate-y: 1;
+}
+
+.btn-primary {
+    -fx-background-color: #00ADB5;
+    -fx-text-fill: #222831;
+    -fx-effect: dropshadow(gaussian, rgba(0, 173, 181, 0.4), 15, 0, 0, 5);
+}
+
+.btn-primary:hover {
+    -fx-background-color: #008C94;
+    -fx-effect: dropshadow(gaussian, rgba(0, 173, 181, 0.6), 20, 0, 0, 5);
+}
+
+.btn-secondary {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #EEEEEE;
+    -fx-border-color: #EEEEEE;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 30;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: rgba(238, 238, 238, 0.1);
+}
+
+.btn-info {
+    -fx-background-color: #00ADB5;
+    -fx-text-fill: #222831;
+    -fx-effect: dropshadow(gaussian, rgba(0, 173, 181, 0.4), 15, 0, 0, 5);
+}
+
+.btn-info:hover {
+    -fx-background-color: #008C94;
+    -fx-effect: dropshadow(gaussian, rgba(0, 173, 181, 0.6), 20, 0, 0, 5);
+}
+
+.btn-danger-sm {
+    -fx-background-color: #d9534f;
+    -fx-padding: 6 14 6 14;
+    -fx-font-size: 13px;
+    -fx-effect: dropshadow(gaussian, rgba(217, 83, 79, 0.4), 10, 0, 0, 3);
+}
+
+.btn-warning-sm {
+    -fx-background-color: #f0ad4e;
+    -fx-text-fill: #222831;
+    -fx-padding: 6 14 6 14;
+    -fx-font-size: 13px;
+    -fx-effect: dropshadow(gaussian, rgba(240, 173, 78, 0.4), 10, 0, 0, 3);
+}
+
+/* ---- Table View (Dark Glass Card) ---- */
+.data-table {
+    -fx-background-color: #393E46;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: rgba(238, 238, 238, 0.1);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 20, 0, 0, 8);
+}
+
+.data-table .column-header-background {
+    -fx-background-color: #222831;
+    -fx-background-radius: 16 16 0 0;
+}
+
+.data-table .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 14 0 14 0;
+}
+
+.data-table .column-header .label {
+    -fx-text-fill: #00ADB5;
+    -fx-font-weight: 800;
+    -fx-font-size: 13.5px;
+    -fx-letter-spacing: 0.5px;
+}
+
+.data-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent rgba(238, 238, 238, 0.05) transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-cell-size: 48;
+}
+
+.data-table .table-row-cell:odd {
+    -fx-background-color: rgba(34, 40, 49, 0.5);
+}
+
+.data-table .table-row-cell:selected {
+    -fx-background-color: rgba(0, 173, 181, 0.2);
+    -fx-border-color: transparent transparent #00ADB5 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.data-table .table-cell {
+    -fx-text-fill: #EEEEEE;
+    -fx-font-weight: 500;
+    -fx-padding: 0 14 0 14;
+    -fx-alignment: center-left;
+}
+
+.data-table .table-row-cell:selected .text {
+    -fx-fill: #EEEEEE;
+    -fx-font-weight: 700;
+}
+
+.data-table .table-row-cell:hover {
+    -fx-background-color: rgba(238, 238, 238, 0.05);
+}
+
+/* Empty table placeholder */
+.data-table .placeholder .label {
+    -fx-text-fill: rgba(238, 238, 238, 0.5);
+    -fx-font-size: 16px;
+}
+
+/* ---- Filter / Summary Bars (Card) ---- */
+.filter-label {
+    -fx-text-fill: rgba(238, 238, 238, 0.7);
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.summary-bar {
+    -fx-background-color: #393E46;
+    -fx-background-radius: 16;
+    -fx-padding: 18 28 18 28;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 20, 0, 0, 8);
+    -fx-border-color: rgba(238, 238, 238, 0.1);
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-alignment: center-left;
+}
+
+.summary-label {
+    -fx-font-weight: 800;
+    -fx-text-fill: #00ADB5;
+    -fx-font-size: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 1, 1);
+}
+
+/* ---- MenuButton (Room Selector) ---- */
+.menu-button {
+    -fx-background-color: #222831;
+    -fx-border-color: rgba(238, 238, 238, 0.2);
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 14 10 14;
+    -fx-text-fill: #EEEEEE;
+    -fx-font-weight: 600;
+    -fx-content-display: left;
+    -fx-alignment: center-left;
+}
+
+.menu-button:hover {
+    -fx-border-color: rgba(0, 173, 181, 0.5);
+}
+
+.menu-button:focused {
+    -fx-border-color: #00ADB5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 173, 181, 0.4), 10, 0, 0, 0);
+}
+
+.menu-button .label {
+    -fx-text-fill: #EEEEEE;
+    -fx-font-weight: 600;
+}
+
+.menu-button .arrow {
+    -fx-background-color: rgba(238, 238, 238, 0.7);
+}
+
+.menu-button .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 8;
+}
+
+/* ---- Context Menu / Popup (dark glass theme) ---- */
+.context-menu {
+    -fx-background-color: #393E46;
+    -fx-border-color: rgba(0, 173, 181, 0.3);
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 24, 0, 0, 8);
+    -fx-padding: 4 0 4 0;
+}
+
+/* Category Headers (Menu labels inside the MenuButton popup) */
+.context-menu .menu > .label {
+    -fx-text-fill: #00ADB5;
+    -fx-font-weight: 800;
+    -fx-font-size: 12.5px;
+    -fx-padding: 6 16 6 16;
+}
+
+.context-menu .menu:hover {
+    -fx-background-color: rgba(0, 173, 181, 0.1);
+}
+
+.context-menu .menu:focused {
+    -fx-background-color: rgba(0, 173, 181, 0.15);
+}
+
+/* Submenu popup (appears to right of Menu category) */
+.context-menu .menu .context-menu {
+    -fx-background-color: #393E46;
+    -fx-border-color: rgba(0, 173, 181, 0.3);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+/* Individual Room MenuItems */
+.context-menu .menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 9 20 9 20;
+}
+
+.context-menu .menu-item .label {
+    -fx-text-fill: #EEEEEE;
+    -fx-font-size: 13.5px;
+    -fx-font-weight: 500;
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: rgba(0, 173, 181, 0.2);
+}
+
+.context-menu .menu-item:hover .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 700;
+}
+
+/* Disabled "No rooms" item */
+.context-menu .menu-item:disabled .label {
+    -fx-text-fill: rgba(238, 238, 238, 0.5);
+    -fx-font-style: italic;
+}
+
+/* Separator line between items */
+.context-menu .separator {
+    -fx-border-color: transparent transparent rgba(238, 238, 238, 0.1) transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 2 0 2 0;
+}

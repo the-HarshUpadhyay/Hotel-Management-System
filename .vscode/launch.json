@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run HotelApp",
+            "request": "launch",
+            "mainClass": "hotel.HotelApp",
+            "projectName": "HotelManagementSystem",
+            "vmArgs": "--module-path /home/harsh/.m2/repository/org/openjfx/javafx-controls/21.0.1/javafx-controls-21.0.1-linux.jar:/home/harsh/.m2/repository/org/openjfx/javafx-fxml/21.0.1/javafx-fxml-21.0.1-linux.jar:/home/harsh/.m2/repository/org/openjfx/javafx-graphics/21.0.1/javafx-graphics-21.0.1-linux.jar:/home/harsh/.m2/repository/org/openjfx/javafx-base/21.0.1/javafx-base-21.0.1-linux.jar --add-modules javafx.controls,javafx.fxml"
+        }
+    ]
+}
